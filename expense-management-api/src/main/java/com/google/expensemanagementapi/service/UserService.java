@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.expensemanagementapi.dto.UserDto;
 import com.google.expensemanagementapi.dto.UserUpdateDto;
+import com.google.expensemanagementapi.entity.User;
 
 public interface UserService {
 	UserDto saveUser(UserDto userDto);
@@ -15,4 +16,6 @@ public interface UserService {
 	UserDto getUser(long userId);
 
 	List<UserDto> getAllUser();
+	
+	User getLoggedInUser();
 }

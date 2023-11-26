@@ -15,7 +15,7 @@ public class UserServiceTest {
 	private UserService userService;
 	@Test
 	public void saveUser() {
-		UserDto userDto=new UserDto("Amit Kumar", "sahay.mtech2013@gmail.com", "test1234");
+		UserDto userDto=new UserDto("Anjali Kumari", "anjali2013@gmail.com", "test1234");
 		UserDto saveUser = userService.saveUser(userDto);
 		assertNotNull(saveUser);
 	}

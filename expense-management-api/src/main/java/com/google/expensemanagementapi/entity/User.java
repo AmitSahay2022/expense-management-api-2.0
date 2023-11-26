@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,9 +30,12 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_generator")
 	@SequenceGenerator(name = "user_id_generator", initialValue = 1000)
 	private long id;
+	
 	@NotBlank(message = "Name Should not blank")
 	private String name;
+	
 	@NotBlank(message = "email Should not blank")
+	@Column(unique = true)
 	private String email;
 	@NotBlank(message = "password Should not blank")
 	private String password;
@@ -41,6 +45,6 @@ public class User {
 	@UpdateTimestamp
 	@Column(name = "Last_updated_at")
 	private Timestamp updatedAt;
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	private Set<Role> roles = new HashSet<>();
 }

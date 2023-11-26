@@ -28,4 +28,12 @@ public class ApplicationExceptionHandler {
 		});
 		return new ResponseEntity<Map<String, Object>>(errors, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(UserAllreadyExistException.class)
+	public ResponseEntity<Map<String,Object>> userAllReadyExist(UserAllreadyExistException e){
+		Map<String, Object> map=new HashMap<>();
+		map.put("message", e.getLocalizedMessage());
+		map.put("status", HttpStatus.CONFLICT);
+		return new ResponseEntity<Map<String,Object>>(map,HttpStatus.CONFLICT);
+	}
 }

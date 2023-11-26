@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 public class UserController {
 	private UserService userService;
 	@PostMapping("/register")
-	public ResponseEntity<UserDto> registerUser(@Valid @RequestBody  UserDto userDto) {
+	public ResponseEntity<UserDto> registerUser(@Valid @RequestBody  UserDto userDto) {		
 		return new ResponseEntity<>(userService.saveUser(userDto),HttpStatus.CREATED);
 	}
 	@PutMapping("{id}")
@@ -41,7 +41,7 @@ public class UserController {
 	public ResponseEntity<UserDto> getUserInfo(@PathVariable long userId){
 		return new ResponseEntity<UserDto>(userService.getUser(userId),HttpStatus.OK);
 	}
-	@GetMapping
+	@GetMapping("/all")
 	public ResponseEntity<List<UserDto>> getAllUserInfo(){
 		return new ResponseEntity<List<UserDto>>(userService.getAllUser(),HttpStatus.OK);
 	}

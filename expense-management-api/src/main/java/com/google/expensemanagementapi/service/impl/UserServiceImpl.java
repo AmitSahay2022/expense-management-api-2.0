@@ -4,12 +4,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.google.expensemanagementapi.dto.UserDto;
 import com.google.expensemanagementapi.dto.UserUpdateDto;
 import com.google.expensemanagementapi.entity.Role;
 import com.google.expensemanagementapi.entity.User;
+import com.google.expensemanagementapi.exception.UserAllreadyExistException;
 import com.google.expensemanagementapi.exception.UserNotFoundException;
 import com.google.expensemanagementapi.repository.UserRepository;
 import com.google.expensemanagementapi.service.UserService;
@@ -20,15 +24,21 @@ import lombok.AllArgsConstructor;
 public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private ModelMapper modelMapper;
+    private PasswordEncoder passwordEncoder;
 	@Override
 	public UserDto saveUser(UserDto userDto) {
 		// TODO Auto-generated method stub
-		User user = modelMapper.map(userDto, User.class);
-		if(user.getRoles().isEmpty()) {
-			Role role=new Role();
-			role.setRoleName("Normal");
-			user.getRoles().add(role);
+		if(userRepository.existsByEmail(userDto.getEmail())) {
+			throw new UserAllreadyExistException("User Allready Exist With This Email");
 		}
+		User user = modelMapper.map(userDto, User.class);
+		
+			Role role=new Role();
+			role.setRoleName("ROLE_USER");
+			user.getRoles().add(role);
+		
+		String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+		user.setPassword(encodedPassword);
 		User savedUser = userRepository.save(user);
 		return modelMapper.map(savedUser, UserDto.class);
 	}
@@ -39,7 +49,8 @@ public class UserServiceImpl implements UserService {
 		UserDto userDto = getUser(userId);
 		User user = modelMapper.map(userDto, User.class);
 		user.setName(dto.getName());
-		user.setPassword(dto.getPassword());
+		String encodedPassword = passwordEncoder.encode(dto.getPassword());
+		user.setPassword(encodedPassword);
 		User updatedUser = userRepository.save(user);
 		return modelMapper.map(updatedUser, UserDto.class);
 	}
@@ -67,4 +78,11 @@ public class UserServiceImpl implements UserService {
 		return list;
 	}
 
+	@Override
+	public User getLoggedInUser() {
+		// TODO Auto-generated method stub
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String email = authentication.getName();
+		return userRepository.findByEmail(email).get();
+	}
 }
